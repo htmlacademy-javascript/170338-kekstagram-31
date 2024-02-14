@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Anton Bogza](https://up.htmlacademy.ru/javascript/31/user/170338).
-* Наставник: `Неизвестно`.
+* Наставник: [Алексей Васильев](https://htmlacademy.ru/profile/id1353249).
 
 ---
 
