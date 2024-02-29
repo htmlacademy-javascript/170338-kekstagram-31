@@ -26,12 +26,13 @@ export class FeedPostsGenerator {
   * @returns {Array} Массив из 25 постов для проекта Keksogram.
   */
   generate(regenerate = false) {
+    const MINIMUM_IDENTITY = 1;
     if(!regenerate && this.#postsStore.size > 0) {
       return Array.from(this.#postsStore.keys);
     }
 
     for (let index = 0; index < this.conut; index++) {
-      const identity = Utils.generateUniqueIdentity(this.conut, this.#postsStore);
+      const identity = Utils.generateUniqueIdentity(MINIMUM_IDENTITY, this.conut, this.#postsStore);
       const feedPost = this.#constructFeedPost(identity);
       this.#postsStore.set(identity, feedPost);
     }

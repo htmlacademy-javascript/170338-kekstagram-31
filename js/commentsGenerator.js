@@ -3,7 +3,7 @@ import { Utils } from './utils';
 
 export class CommentsGenerator {
   static MAX_COMMENTS_COUNT = 30;
-  comments = [
+  #COMMENTS = [
     'Всё отлично!',
     'В целом всё неплохо. Но не всё.',
     'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
@@ -19,8 +19,9 @@ export class CommentsGenerator {
   }
 
   #generateRandomComment(comments) {
+    const MINIMUM_IDENTITY = 1;
     return {
-      id: Utils.generateUniqueIdentity(this.commentsMaxCout, this.#commentsStore),
+      id: Utils.generateUniqueIdentity(MINIMUM_IDENTITY, this.commentsMaxCout, this.#commentsStore),
       avatar: `img/avatar-${Utils.generateRandomNumber(0, 6)}`,
       message: Utils.getRandomValueFromArray(comments),
       name: NameGenerator.generateRandomName()
@@ -32,7 +33,7 @@ export class CommentsGenerator {
   * @param {comments} Массив из которого берутся комментарии.
   * @returns {Array} Массив случайного количество комментариев в диапазоне от 0 до 30.
   */
-  generate(comments = this.comments) {
+  generate(comments = this.#COMMENTS) {
     const result = [];
     const commentsCout = Utils.generateRandomNumber(0, 30);
     for (let index = 0; index < commentsCout; index++) {
