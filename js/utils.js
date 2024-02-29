@@ -13,7 +13,7 @@ export class Utils {
   */
   static getRandomValueFromArray(array) {
     if (!Array.isArray(array)) {
-      throw new Error('Значение долно быть массивом');
+      throw new Error('Значение должно быть массивом');
     }
 
     return array[Math.floor(Math.random() * array.length)];
@@ -25,10 +25,10 @@ export class Utils {
   * @param {dataStore} Map в котором хранятся все уже использованные числа
   * @returns {any} Случайное значение из массива
   */
-  static generateUniqueIdentity(maxIdentity, dataStore) {
+  static generateUniqueIdentity(minIdentity, maxIdentity, dataStore) {
     let result;
     do {
-      result = this.generateRandomNumber(0, maxIdentity);
+      result = this.generateRandomNumber(minIdentity, maxIdentity);
     } while(dataStore.has(result));
     return result;
   }
