@@ -22,7 +22,7 @@ export class CommentsGenerator {
     const MINIMUM_IDENTITY = 1;
     return {
       id: Utils.generateUniqueIdentity(MINIMUM_IDENTITY, this.commentsMaxCout, this.#commentsStore),
-      avatar: `img/avatar-${Utils.generateRandomNumber(0, 6)}`,
+      avatar: `img/avatar-${Utils.generateRandomNumber(1, 6)}.svg`,
       message: Utils.getRandomValueFromArray(comments),
       name: NameGenerator.generateRandomName()
     };
