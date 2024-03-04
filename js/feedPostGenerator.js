@@ -23,7 +23,7 @@ export class FeedPostsGenerator {
   /**
   * Генерирует 25 объектов постов и комментариями к ним.
   * @param {regenerate} Признак того что нужно перегененировать посты.
-  * @returns {Array} Массив из 25 постов для проекта Keksogram.
+  * @returns {Map} Map из 25 постов для проекта Keksogram.
   */
   generate(regenerate = false) {
     const MINIMUM_IDENTITY = 1;
@@ -37,6 +37,6 @@ export class FeedPostsGenerator {
       this.#postsStore.set(identity, feedPost);
     }
 
-    return Array.from(this.#postsStore.values());
+    return this.#postsStore;
   }
 }

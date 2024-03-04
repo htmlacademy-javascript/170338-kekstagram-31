@@ -1,12 +1,11 @@
-export class PicturesTemplateRenderer {
+export class PicturesPreviewRenderer {
   #IMG_SUFFIX = '__img';
   #LIKES_SUFFIX = '__likes';
   #COMMENTS_SUFFIX = '__comments';
 
-  constructor(templateId, templatePartName, targetPlace){
+  constructor(templateId, templatePartName = templateId){
     this.templateId = templateId;
     this.templatePartName = templatePartName;
-    this.targetPlace = targetPlace;
   }
 
   #getTemplate(){
@@ -37,6 +36,7 @@ export class PicturesTemplateRenderer {
   #renderPictureTemplate(picture) {
     const template = this.#getTemplate();
     const templateInstance = template.cloneNode(true);
+    templateInstance.dataset.id = picture.id;
     this.#fillImageTemplatePart(templateInstance, picture);
     this.#fillLikesTemplatePart(templateInstance, picture);
     this.#fillCommentsTemplatePart(templateInstance, picture);
@@ -47,18 +47,18 @@ export class PicturesTemplateRenderer {
   /**
   * Рендерит переданное значение постов
   * @param {pictures} Массив постов для генерации DOM объектов и вставки их в задданую позицию в документе
+  * @returns {DocumentFragment} Фрагмент из миниатюр изображений переданных параметром.
   */
   render(pictures){
-    if (!Array.isArray(pictures)) {
-      throw new Error('Значение должно быть массивом');
+    if (!(pictures instanceof Map)) {
+      throw new Error('Значение должно быть map');
     }
 
     const fragment = document.createDocumentFragment();
-    for(let i = 0; i < pictures.length; i++) {
-      fragment.appendChild(this.#renderPictureTemplate(pictures[i]));
+    for(const picture of pictures.values()) {
+      fragment.appendChild(this.#renderPictureTemplate(picture));
     }
 
-    const targetPlace = document.querySelector(`.${this.targetPlace}`);
-    targetPlace?.appendChild(fragment);
+    return fragment;
   }
 }
