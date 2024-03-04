@@ -97,8 +97,6 @@ export class PictureFullScreenRenderer {
     const showCommentsTotalCountPart = this.modalDialog.querySelector(`.${this.#SOCIAL_PART}${this.#COMMENTS_TOTAL_COUNT_SUFFIX}`);
     showCommentsTotalCountPart.textContent = comments.length;
 
-
-
     while (this.commentContainer.firstChild) {
       this.commentContainer.removeChild(this.commentContainer.firstChild);
     }
