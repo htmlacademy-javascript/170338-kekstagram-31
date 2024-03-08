@@ -46,9 +46,8 @@ export class PictureFullScreenRenderer {
 
   #hideModalDialog() {
     document.body.classList.remove(this.#MODAL_DIALOG_CLASS);
-    const modalDialog = document.querySelector(`.${this.modalDialogName}`);
-    modalDialog.classList.add(this.#HIDEN_CLASS);
-    this.#showLoadMoreCommentsPart(modalDialog);
+    this.modalDialog.classList.add(this.#HIDEN_CLASS);
+    this.#showLoadMoreCommentsPart(this.modalDialog);
 
     //Clean Up
     document.removeEventListener('keydown', this.onDocumentKeyDown);
