@@ -1,4 +1,5 @@
 export class PictureFullScreenRenderer {
+  #PRELOADED_COMMENTS_COUNT = 5;
   //Suffixes
   #IMG_SUFFIX = '__img';
   #COMMENTS_COMMENT_SUFFIX = '__comment';
@@ -28,8 +29,11 @@ export class PictureFullScreenRenderer {
     this.closeButton = document.querySelector(`.${this.modalDialogName}${this.#CANCEL_SUFFIX}`);
     this.commentTemplate = this.modalDialog.querySelector(`.${this.#SOCIAL_PART}${this.#COMMENTS_COMMENT_SUFFIX}`);
     this.commentContainer = this.modalDialog.querySelector(`.${this.#SOCIAL_PART}${this.#COMMENTS_COMMENTS_SUFFIX}`);
+    this.loadMoreButton = this.modalDialog.querySelector(this.#COMMENTS_LOADER_SELECTOR);
+    this.currentComments = [];
 
     this.onCloseButtonClick = () => this.#hideModalDialog();
+    this.onLoadMoreClick = () => this.#loadMoreComments();
     this.onDocumentKeyDown = (evt) => {
       if (evt.key === 'Escape') {
         this.#hideModalDialog();
@@ -41,17 +45,19 @@ export class PictureFullScreenRenderer {
     document.body.classList.add(this.#MODAL_DIALOG_CLASS);
 
     this.modalDialog.classList.remove(this.#HIDEN_CLASS);
-    this.#hideLoadMoreCommentsPart();
+    this.currentLoadedComments = 0;
   }
 
   #hideModalDialog() {
     document.body.classList.remove(this.#MODAL_DIALOG_CLASS);
     this.modalDialog.classList.add(this.#HIDEN_CLASS);
-    this.#showLoadMoreCommentsPart(this.modalDialog);
 
     //Clean Up
     document.removeEventListener('keydown', this.onDocumentKeyDown);
     this.closeButton.removeEventListener('click', this.onCloseButtonClick);
+    this.loadMoreButton.removeEventListener('click', this.onLoadMoreClick);
+    this.currentLoadedComments = 0;
+    this.currentComments = [];
   }
 
   #fillPictureInfo({ url, description }) {
@@ -68,19 +74,8 @@ export class PictureFullScreenRenderer {
   }
 
   #updateLoadedCommentsCount() {
-    const allCommentsCount = this.modalDialog.querySelectorAll(`.${this.#SOCIAL_PART}${this.#COMMENTS_COMMENT_SUFFIX}`).length;
     const showCommentsCountPart = this.modalDialog.querySelector(`.${this.#SOCIAL_PART}${this.#COMMENTS_SHOW_COUNT_SUFFIX}`);
-    showCommentsCountPart.textContent = allCommentsCount;
-  }
-
-  #hideLoadMoreCommentsPart() {
-    const loadMoreCommentsPart = this.modalDialog.querySelector(this.#COMMENTS_LOADER_SELECTOR);
-    loadMoreCommentsPart.classList.add(this.#HIDEN_CLASS);
-  }
-
-  #showLoadMoreCommentsPart(){
-    const loadMoreCommentsPart = this.modalDialog.querySelector(this.#COMMENTS_LOADER_SELECTOR);
-    loadMoreCommentsPart.classList.remove(this.#HIDEN_CLASS);
+    showCommentsCountPart.textContent = this.currentLoadedComments;
   }
 
   #fillCommentInfo(commentNode, { avatar, name, message }) {
@@ -92,23 +87,15 @@ export class PictureFullScreenRenderer {
     comment.textContent = message;
   }
 
-  #fillCommentsInfo({ comments }) {
+  #fillCommentsInfo() {
     const showCommentsTotalCountPart = this.modalDialog.querySelector(`.${this.#SOCIAL_PART}${this.#COMMENTS_TOTAL_COUNT_SUFFIX}`);
-    showCommentsTotalCountPart.textContent = comments.length;
+    showCommentsTotalCountPart.textContent = this.currentComments.length;
 
     while (this.commentContainer.firstChild) {
       this.commentContainer.removeChild(this.commentContainer.firstChild);
     }
 
-    const fragment = document.createDocumentFragment();
-    for(let i = 0; i < comments.length; i++) {
-      const commentNode = this.commentTemplate.cloneNode(true);
-      this.#fillCommentInfo(commentNode, comments[i]);
-      fragment.appendChild(commentNode);
-    }
-
-    this.commentContainer.appendChild(fragment);
-    this.#updateLoadedCommentsCount();
+    this.#loadMoreComments();
   }
 
   #subscribeOnClickCloseButton() {
@@ -119,11 +106,37 @@ export class PictureFullScreenRenderer {
     document.addEventListener('keydown', this.onDocumentKeyDown);
   }
 
+  #subscribeOnLoadMoreComments() {
+    this.loadMoreButton.addEventListener('click', this.onLoadMoreClick);
+  }
+
+  #loadMoreComments() {
+    this.loadMoreButton.classList.remove(this.#HIDEN_CLASS);
+    const fragment = document.createDocumentFragment();
+    const requestedComments = this.currentLoadedComments + this.#PRELOADED_COMMENTS_COUNT;
+
+    const commentsCount = requestedComments > this.currentComments.length ? this.currentComments.length : requestedComments;
+    for(let i = this.currentLoadedComments; i < commentsCount; i++) {
+      const commentNode = this.commentTemplate.cloneNode(true);
+      this.#fillCommentInfo(commentNode, this.currentComments[i]);
+      fragment.appendChild(commentNode);
+      this.currentLoadedComments++;
+    }
+
+    this.commentContainer.appendChild(fragment);
+    this.#updateLoadedCommentsCount();
+
+    if(this.currentLoadedComments === this.currentComments.length) {
+      this.loadMoreButton.classList.add(this.#HIDEN_CLASS);
+    }
+  }
+
   render(picture) {
     if(!picture) {
       throw new Error('Информация о посте не найдена');
     }
 
+    this.currentComments = picture.comments;
     this.#showModalDialog();
     this.#fillPictureInfo(picture);
     this.#fillLikesInfo(picture);
@@ -131,5 +144,6 @@ export class PictureFullScreenRenderer {
 
     this.#subscribeOnClickCloseButton();
     this.#subscribeOnKeyDownCloseButton();
+    this.#subscribeOnLoadMoreComments();
   }
 }
