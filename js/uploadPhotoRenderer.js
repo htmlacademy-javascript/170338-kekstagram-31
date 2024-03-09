@@ -4,12 +4,14 @@ export class UploadPhotoRenderer {
   //CLASSES
   #HIDEN_CLASS = 'hidden';
   #MODAL_DIALOG_CLASS = 'modal-open';
+  #UPLOAD_PHOTO_CLASS = 'img-upload__input';
 
   constructor(modalDialogName) {
     this.modalDialogName = modalDialogName;
 
     this.modalDialog = document.querySelector(`.${this.modalDialogName}${this.#OVERLAY_SUFFIX}`);
     this.closeButton = document.querySelector(`.${this.modalDialogName}${this.#CANCEL_SUFFIX}`);
+    this.photoUploadInput = document.querySelector(`.${this.#UPLOAD_PHOTO_CLASS}`);
 
     this.onCloseButtonClick = () => this.#hideModalDialog();
     this.onDocumentKeyDown = (evt) => {
@@ -26,6 +28,7 @@ export class UploadPhotoRenderer {
     //Clean Up
     document.removeEventListener('keydown', this.onDocumentKeyDown);
     this.closeButton.removeEventListener('click', this.onCloseButtonClick);
+    this.photoUploadInput.value = '';
   }
 
   #showModalDialog() {

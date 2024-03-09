@@ -32,4 +32,13 @@ export class Utils {
     } while(dataStore.has(result));
     return result;
   }
+
+  static supressKeydown(keyCode, elementClass) {
+    const element = document.querySelector(`.${elementClass}`);
+    element.addEventListener('keydown', (evt) => {
+      if (evt.key === keyCode) {
+        evt.stopPropagation();
+      }
+    });
+  }
 }
