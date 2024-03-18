@@ -6,16 +6,22 @@ export class UploadPhotoRenderer {
   #OVERLAY_SUFFIX = '__overlay';
   #INPUT_SUFFIX = '__input';
   #EFFECTS_SUFFIX = '__effects';
+  #SUBMIT_SUFFIX = '__submit';
 
   #ZOOM_OUT_CONTROL_SUFFIX = '--smaller';
   #ZOOM_IN_CONTROL_SUFFIX = '--bigger';
 
   //CLASSES
   #HIDEN_CLASS = 'hidden';
+  #HASHTAGS_CLASS = 'text__hashtags';
+  #DESCRIPTION_CLASS = 'text__description';
   #MODAL_DIALOG_CLASS = 'modal-open';
   #EFFECT_LEVEL_CLASS = 'effect-level';
   #SCALE_CONTROL_CLASS = 'scale__control';
   #EFFECT_PREFIX = 'effects__preview--';
+
+  //LANG
+  #UPLOADING_MESSAGE = 'Загрузка...';
 
   constructor(modalDialogName) {
     this.modalDialogName = modalDialogName;
@@ -24,7 +30,11 @@ export class UploadPhotoRenderer {
     this.closeButton = this.modalDialog.querySelector(`.${this.modalDialogName}${this.#CANCEL_SUFFIX}`);
     this.photoUploadInput = document.querySelector(`.${this.modalDialogName}${this.#INPUT_SUFFIX}`);
     this.effectsCollection = document.querySelector(`.${this.modalDialogName}${this.#EFFECTS_SUFFIX}`);
+    this.submitButton = document.querySelector(`.${this.modalDialogName}${this.#SUBMIT_SUFFIX}`);
+    this.hashTags = document.querySelector(`.${this.#HASHTAGS_CLASS}`);
+    this.description = document.querySelector(`.${this.#DESCRIPTION_CLASS}`);
 
+    this.submitButtonDefaultName = this.submitButton.textContent;
     this.zoomingService = new ZoomingService(this.modalDialogName, this.#SCALE_CONTROL_CLASS);
     this.visualEffectSevice = new VisualEffectsService(this.#EFFECT_LEVEL_CLASS, this.modalDialogName, this.#EFFECT_PREFIX);
     this.#configureZooming();
@@ -59,6 +69,9 @@ export class UploadPhotoRenderer {
   #resetSettings() {
     this.zoomingService.cancel();
     this.visualEffectSevice.cancel();
+    this.hashTags.value = '';
+    this.description.value = '';
+    this.photoUploadInput.value = '';
   }
 
   #hideModalDialog() {
@@ -66,18 +79,39 @@ export class UploadPhotoRenderer {
     this.modalDialog.classList.add(this.#HIDEN_CLASS);
 
     //Clean Up
+    this.#resetSettings();
     this.visualEffectSevice.destroy();
     document.removeEventListener('keydown', this.onDocumentKeyDown);
     this.closeButton.removeEventListener('click', this.onCloseButtonClick);
     this.effectsCollection.removeEventListener('change', this.onEffectChange);
-    this.photoUploadInput.value = '';
   }
 
   #showModalDialog() {
-    this.#resetSettings();
     this.visualEffectSevice.initialize();
     document.body.classList.add(this.#MODAL_DIALOG_CLASS);
     this.modalDialog.classList.remove(this.#HIDEN_CLASS);
+  }
+
+  beginUploading() {
+    this.submitButton.disabled = true;
+    this.submitButton.textContent = this.#UPLOADING_MESSAGE;
+  }
+
+  suspendEvents(){
+    document.removeEventListener('keydown', this.onDocumentKeyDown);
+  }
+
+  unSuspendEvents(){
+    document.addEventListener('keydown', this.onDocumentKeyDown);
+  }
+
+  endUploading() {
+    this.submitButton.disabled = false;
+    this.submitButton.textContent = this.submitButtonDefaultName;
+  }
+
+  cancel() {
+    this.#hideModalDialog();
   }
 
   render(pictureName){
