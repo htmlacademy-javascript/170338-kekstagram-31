@@ -2,11 +2,16 @@ import { VisualEffectsService } from './visualEffectsService';
 import { ZoomingService } from './zoomingService';
 
 export class UploadPhotoRenderer {
+  //Settings
+  #SUPPORTED_FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
+  //Suffixes
   #CANCEL_SUFFIX = '__cancel';
   #OVERLAY_SUFFIX = '__overlay';
   #INPUT_SUFFIX = '__input';
   #EFFECTS_SUFFIX = '__effects';
   #SUBMIT_SUFFIX = '__submit';
+  #PREVIEW_IMG_SUFFIX = '__preview';
 
   #ZOOM_OUT_CONTROL_SUFFIX = '--smaller';
   #ZOOM_IN_CONTROL_SUFFIX = '--bigger';
@@ -18,7 +23,7 @@ export class UploadPhotoRenderer {
   #MODAL_DIALOG_CLASS = 'modal-open';
   #EFFECT_LEVEL_CLASS = 'effect-level';
   #SCALE_CONTROL_CLASS = 'scale__control';
-  #EFFECT_PREFIX = 'effects__preview--';
+  #EFFECT_PREFIX = 'effects__preview';
 
   //LANG
   #UPLOADING_MESSAGE = 'Загрузка...';
@@ -31,6 +36,7 @@ export class UploadPhotoRenderer {
     this.photoUploadInput = document.querySelector(`.${this.modalDialogName}${this.#INPUT_SUFFIX}`);
     this.effectsCollection = document.querySelector(`.${this.modalDialogName}${this.#EFFECTS_SUFFIX}`);
     this.submitButton = document.querySelector(`.${this.modalDialogName}${this.#SUBMIT_SUFFIX}`);
+    this.imagePreview = document.querySelector(`.${this.modalDialogName}${this.#PREVIEW_IMG_SUFFIX} img`);
     this.hashTags = document.querySelector(`.${this.#HASHTAGS_CLASS}`);
     this.description = document.querySelector(`.${this.#DESCRIPTION_CLASS}`);
 
@@ -92,6 +98,16 @@ export class UploadPhotoRenderer {
     this.modalDialog.classList.remove(this.#HIDEN_CLASS);
   }
 
+  #SetPreviewPhoto(file){
+    const fileName = file.name.toLowerCase();
+    const matches = this.#SUPPORTED_FILE_TYPES.some((it) => fileName.endsWith(it));
+    if(matches) {
+      const objectUrl = URL.createObjectURL(file);
+      this.imagePreview.src = objectUrl;
+      this.visualEffectSevice.setPreviewPhoto(objectUrl);
+    }
+  }
+
   beginUploading() {
     this.submitButton.disabled = true;
     this.submitButton.textContent = this.#UPLOADING_MESSAGE;
@@ -114,13 +130,14 @@ export class UploadPhotoRenderer {
     this.#hideModalDialog();
   }
 
-  render(pictureName){
-    if(!pictureName) {
+  render(file){
+    if(!file) {
       throw new Error('Файл с изображением не найден');
     }
 
     this.#showModalDialog();
 
+    this.#SetPreviewPhoto(file);
     this.closeButton.addEventListener('click', this.onCloseButtonClick);
     document.addEventListener('keydown', this.onDocumentKeyDown);
     this.effectsCollection.addEventListener('change', this.onEffectChange);

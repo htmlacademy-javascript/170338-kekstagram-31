@@ -1,4 +1,5 @@
 export class ApiClient {
+  //Suffixes
   #DATA_STORAGE_SUFFIX = 'data';
 
   constructor(serverAddress){

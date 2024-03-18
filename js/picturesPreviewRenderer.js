@@ -1,4 +1,5 @@
 export class PicturesPreviewRenderer {
+  //Suffixes
   #IMG_SUFFIX = '__img';
   #LIKES_SUFFIX = '__likes';
   #COMMENTS_SUFFIX = '__comments';

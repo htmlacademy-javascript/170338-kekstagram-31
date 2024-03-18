@@ -1,11 +1,14 @@
 export class VisualEffectsService {
+  //Consts
+  #EMPTY_EFFECT = 'none';
+  #EMPTY_EFFECT_VALUE = 100;
+
+  //Suffixes
   #SLIDER_SUFFIX = '__slider';
   #SLIDER_VALUE_SUFFIX = '__value';
   #PREVIEW_IMG_SUFFIX = '__preview';
+  //Classes
   #HIDE_OBJECT_CLASS = 'visually-hidden';
-
-  #EMPTY_EFFECT = 'none';
-  #EMPTY_EFFECT_VALUE = 100;
 
   #EFFECTS = {
     chrome: { min: 0, max: 1, step: 0.1, getValue: (value) => `grayscale(${value})` },
@@ -22,6 +25,7 @@ export class VisualEffectsService {
     this.slider = this.effectLevel.querySelector(`.${effectSection}${this.#SLIDER_SUFFIX}`);
     this.sliderValue = this.effectLevel.querySelector(`.${effectSection}${this.#SLIDER_VALUE_SUFFIX}`);
     this.imagePreview = document.querySelector(`.${imageContainerName}${this.#PREVIEW_IMG_SUFFIX} img`);
+    this.imageThumbnails = document.querySelectorAll(`.${effectPrefix}`);
     this.currentEffect = {
       effect: this.#EMPTY_EFFECT,
       value: this.#EMPTY_EFFECT_VALUE
@@ -38,7 +42,7 @@ export class VisualEffectsService {
       }
     });
 
-    this.imagePreview.classList.add(`${this.effectPrefix}${this.currentEffect.effect}`);
+    this.imagePreview.classList.add(`${this.effectPrefix}--${this.currentEffect.effect}`);
 
     if (this.currentEffect.effect === this.#EMPTY_EFFECT) {
       this.effectLevel.classList.add(this.#HIDE_OBJECT_CLASS);
@@ -89,6 +93,12 @@ export class VisualEffectsService {
 
     this.#updateSliderEffect(effect);
     this.#applyEffect();
+  }
+
+  setPreviewPhoto(objectUrl) {
+    this.imageThumbnails.forEach((thumbnail) => {
+      thumbnail.style.backgroundImage = `url(${objectUrl})`;
+    });
   }
 
   cancel() {

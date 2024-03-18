@@ -1,4 +1,5 @@
 export class FormValidator {
+  //Classes
   #HASHTAGS_CLASS = 'text__hashtags';
   #DESCRIPTION_CLASS = 'text__description';
 

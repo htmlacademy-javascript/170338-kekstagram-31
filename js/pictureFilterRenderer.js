@@ -1,11 +1,14 @@
 import { Utils } from './utils';
 
 export class PictureFilterRenderer {
+  //Constants
   #DELAY_INTERVAL = 500;
   #RANDOM_POSTS_COUNT = 10;
 
+  //Classes
   #FILTER_CLASS = 'filter';
 
+  //Suffixes
   #INACTIVE_SUFFIX = '--inactive';
   #ACTIVE_SUFFIX = '--active';
   #FORM_SUFFIX = '__form';

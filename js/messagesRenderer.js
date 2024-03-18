@@ -1,4 +1,5 @@
 export class MessagesRenderer {
+  //Suffixes
   #MESSAGE_BUTTON_SUFFIX = '__button';
   #MESSAGE_DIALOG_SUFFIX = '__inner';
 

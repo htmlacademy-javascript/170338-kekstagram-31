@@ -42,8 +42,8 @@ thumbnailsContainer.addEventListener('click', (evt) => {
 photoUploadInput.addEventListener('change', () => {
   const files = photoUploadInput.files;
   if (files.length > 0) {
-    const fileName = files[0].name;
-    uploadPictureRenderer.render(fileName);
+    const file = files[0];
+    uploadPictureRenderer.render(file);
   }
 });
 
