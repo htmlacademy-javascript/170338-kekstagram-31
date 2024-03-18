@@ -5,6 +5,7 @@ import { FormValidator } from './formValidator';
 import { Utils } from './utils';
 import { ApiClient } from './apiClient';
 import { MessagesRenderer } from './messagesRenderer';
+import { PictureFilterRenderer } from './pictureFilterRenderer';
 
 //Selectors
 const thumbnailsContainer = document.querySelector('.pictures');
@@ -21,6 +22,8 @@ const messageRenderer = new MessagesRenderer();
 
 //Logic
 const feedPosts = await apiClient.getData(() => messageRenderer.renderLoadError('data-error'));
+const filterRenderer = new PictureFilterRenderer('img-filters', feedPosts, thumbnailsContainer, picturesRenderer);
+filterRenderer.render();
 const thumbnailsFragments = picturesRenderer.render(feedPosts);
 thumbnailsContainer?.appendChild(thumbnailsFragments);
 Utils.supressKeydown('Escape', 'text__hashtags');
