@@ -44,6 +44,13 @@ export class PicturesPreviewRenderer {
     return templateInstance;
   }
 
+  clear(thumbnailsContainer) {
+    const pictures = thumbnailsContainer.querySelectorAll(`.${this.templateId}`);
+    pictures.forEach((picture) => {
+      picture.remove();
+    });
+  }
+
   /**
   * Рендерит переданное значение постов
   * @param {pictures} Массив постов для генерации DOM объектов и вставки их в задданую позицию в документе

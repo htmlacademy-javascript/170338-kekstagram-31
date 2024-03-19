@@ -33,6 +33,11 @@ export class Utils {
     return result;
   }
 
+  /**
+   * Позволяет заглушить эвент на заданном классе
+   * @param {keyCode} Тип эвента который нужно заглушить
+   * @param {elementClass} Класс объекта чей эвент нужно заглушить
+   */
   static supressKeydown(keyCode, elementClass) {
     const element = document.querySelector(`.${elementClass}`);
     element.addEventListener('keydown', (evt) => {
@@ -40,5 +45,39 @@ export class Utils {
         evt.stopPropagation();
       }
     });
+  }
+
+  /**
+   * Функция позволяет выполнять любую функцию переденную как callback отложено
+   * @param {callback} Функция которую небоходимо выполнить с определенной задержкой
+   * @returns {Function} Функцию обертку которая и выполняет callback с задержкой
+   */
+  static debounce(callback, interval) {
+    let lastTimeout = null;
+
+    return (...args) => {
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+
+      lastTimeout = window.setTimeout(() => {
+        callback(...args);
+      }, interval);
+    };
+  }
+
+  /**
+   * Функция для перемешивания массива
+   * @param {Array} Массив который необходимо случайным образом перемешать
+   * @returns {Array} Перемешанный исходный массив
+   */
+  static shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
   }
 }
