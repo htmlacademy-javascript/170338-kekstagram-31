@@ -1,4 +1,5 @@
 export class FormValidator {
+  //Classes
   #HASHTAGS_CLASS = 'text__hashtags';
   #DESCRIPTION_CLASS = 'text__description';
 
@@ -61,6 +62,11 @@ export class FormValidator {
 
   #validateDescriptionLength(value) {
     return value.length <= 140;
+  }
+
+  reset() {
+    this.pristine.reset();
+    this.pristine.destroy();
   }
 
   validate() {

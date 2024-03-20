@@ -1,5 +1,7 @@
 export class PictureFullScreenRenderer {
+  //Constants
   #PRELOADED_COMMENTS_COUNT = 5;
+
   //Suffixes
   #IMG_SUFFIX = '__img';
   #COMMENTS_COMMENT_SUFFIX = '__comment';

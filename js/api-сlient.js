@@ -1,8 +1,13 @@
 export class ApiClient {
+  //Suffixes
   #DATA_STORAGE_SUFFIX = 'data';
 
-  constructor(serverAddress){
+  //Classes
+  #DATA_ERROR = 'data-error';
+
+  constructor(serverAddress, messageRenderer){
     this.serverAddress = serverAddress;
+    this.messageRenderer = messageRenderer;
   }
 
   #validateResponse(response) {
@@ -11,21 +16,21 @@ export class ApiClient {
     }
   }
 
-  async getData(onFail){
+  async getData(){
     try {
-      const response = await fetch(`${this.serverAddress}/${this.#DATA_STORAGE_SUFFIX}`);
+      const response = await fetch(`${this.serverAddress}${this.#DATA_STORAGE_SUFFIX}`);
       this.#validateResponse(response);
 
       const postsArray = await response.json();
       return new Map(postsArray.map((post) => [post.id, post]));
     } catch {
-      onFail();
+      this.messageRenderer.renderLoadError(this.#DATA_ERROR);
     }
 
     return null;
   }
 
-  async postData(formData, onFail){
+  async postData(formData){
     try {
       const response = await fetch(`${this.serverAddress}`, {
         method: 'POST',
@@ -34,10 +39,7 @@ export class ApiClient {
 
       this.#validateResponse(response);
     } catch (error) {
-      onFail();
-      return false;
+      throw new Error(error.message);
     }
-
-    return true;
   }
 }

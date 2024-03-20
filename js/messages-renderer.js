@@ -1,4 +1,9 @@
 export class MessagesRenderer {
+  //Classes
+  #MESSAGE_SUCCESS = 'success';
+  #MESSAGE_ERROR = 'error';
+
+  //Suffixes
   #MESSAGE_BUTTON_SUFFIX = '__button';
   #MESSAGE_DIALOG_SUFFIX = '__inner';
 
@@ -78,20 +83,20 @@ export class MessagesRenderer {
     }, 5000);
   }
 
-  renderUploadError(templateId, callback) {
+  renderUploadError(callback) {
     this.callback = callback;
-    this.messageElement = this.#showMessage(templateId);
-    this.messageDialog = this.messageElement.querySelector(`.${templateId}${this.#MESSAGE_DIALOG_SUFFIX}`);
-    this.messageCloseButton = this.messageElement.querySelector(`.${templateId}${this.#MESSAGE_BUTTON_SUFFIX}`);
+    this.messageElement = this.#showMessage(this.#MESSAGE_ERROR);
+    this.messageDialog = this.messageElement.querySelector(`.${this.#MESSAGE_ERROR}${this.#MESSAGE_DIALOG_SUFFIX}`);
+    this.messageCloseButton = this.messageElement.querySelector(`.${this.#MESSAGE_ERROR}${this.#MESSAGE_BUTTON_SUFFIX}`);
 
     this.#subscribeOnCloseEvents();
   }
 
-  renderSuccess(templateId, callback) {
+  renderSuccess(callback) {
     this.callback = callback;
-    this.messageElement = this.#showMessage(templateId);
-    this.messageDialog = this.messageElement.querySelector(`.${templateId}${this.#MESSAGE_DIALOG_SUFFIX}`);
-    this.messageCloseButton = this.messageElement.querySelector(`.${templateId}${this.#MESSAGE_BUTTON_SUFFIX}`);
+    this.messageElement = this.#showMessage(this.#MESSAGE_SUCCESS);
+    this.messageDialog = this.messageElement.querySelector(`.${this.#MESSAGE_SUCCESS}${this.#MESSAGE_DIALOG_SUFFIX}`);
+    this.messageCloseButton = this.messageElement.querySelector(`.${this.#MESSAGE_SUCCESS}${this.#MESSAGE_BUTTON_SUFFIX}`);
 
     this.#subscribeOnCloseEvents();
   }

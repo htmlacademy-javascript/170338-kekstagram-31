@@ -1,6 +1,7 @@
 import { Utils } from './utils';
 
 export class NameGenerator {
+  //Prefixes
   static #NAMEPREFIXES = ['Bel', 'Nar', 'Xan', 'Jin', 'Far', 'Kas', 'Ver', 'Rin', 'Sar', 'Zen'];
   static #NAMESUFFIXES = ['dor', 'han', 'thos', 'lian', 'mar', 'ser', 'ion', 'en', 'lar', 'an'];
 

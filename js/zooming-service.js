@@ -1,6 +1,9 @@
 export class ZoomingService {
+  //Suffixes
   #PREVIEW_IMG_SUFFIX = '__preview';
   #SCALE_VALUE_SUFFIX = '--value';
+
+  //Settings
   #ZOOM_SETTINGS = {
     Min: 25,
     Max: 100,

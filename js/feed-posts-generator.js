@@ -1,6 +1,6 @@
 import { Utils } from './utils';
-import { CommentsGenerator } from './commentsGenerator';
-import { DescriptionGenerator } from './descriptionGenerator';
+import { CommentsGenerator } from './comments-generator';
+import { DescriptionGenerator } from './description-generator';
 
 export class FeedPostsGenerator {
   #postsStore = new Map();
@@ -28,7 +28,7 @@ export class FeedPostsGenerator {
   generate(regenerate = false) {
     const MINIMUM_IDENTITY = 1;
     if(!regenerate && this.#postsStore.size > 0) {
-      return Array.from(this.#postsStore.keys);
+      return this.#postsStore;
     }
 
     for (let index = 0; index < this.conut; index++) {

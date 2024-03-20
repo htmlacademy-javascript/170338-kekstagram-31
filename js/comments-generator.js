@@ -1,7 +1,8 @@
-import { NameGenerator } from './nameGenerator';
+import { NameGenerator } from './name-generator';
 import { Utils } from './utils';
 
 export class CommentsGenerator {
+  //Constants
   static MAX_COMMENTS_COUNT = 30;
   #COMMENTS = [
     'Всё отлично!',
