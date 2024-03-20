@@ -1,5 +1,6 @@
-import { VisualEffectsService } from './visualEffectsService';
-import { ZoomingService } from './zoomingService';
+import { VisualEffectsService } from './visual-effects-service';
+import { ZoomingService } from './zooming-service';
+import { FormValidator } from './form-validator';
 
 export class UploadPhotoRenderer {
   //Settings
@@ -11,6 +12,7 @@ export class UploadPhotoRenderer {
   #INPUT_SUFFIX = '__input';
   #EFFECTS_SUFFIX = '__effects';
   #SUBMIT_SUFFIX = '__submit';
+  #FORM_SUFFIX = '__form';
   #PREVIEW_IMG_SUFFIX = '__preview';
 
   #ZOOM_OUT_CONTROL_SUFFIX = '--smaller';
@@ -23,13 +25,17 @@ export class UploadPhotoRenderer {
   #MODAL_DIALOG_CLASS = 'modal-open';
   #EFFECT_LEVEL_CLASS = 'effect-level';
   #SCALE_CONTROL_CLASS = 'scale__control';
+
+  //PREFIXES
   #EFFECT_PREFIX = 'effects__preview';
 
   //LANG
   #UPLOADING_MESSAGE = 'Загрузка...';
 
-  constructor(modalDialogName) {
+  constructor(modalDialogName, apiClient, messageRenderer) {
     this.modalDialogName = modalDialogName;
+    this.messageRenderer = messageRenderer;
+    this.apiClient = apiClient;
 
     this.modalDialog = document.querySelector(`.${this.modalDialogName}${this.#OVERLAY_SUFFIX}`);
     this.closeButton = this.modalDialog.querySelector(`.${this.modalDialogName}${this.#CANCEL_SUFFIX}`);
@@ -39,10 +45,13 @@ export class UploadPhotoRenderer {
     this.imagePreview = document.querySelector(`.${this.modalDialogName}${this.#PREVIEW_IMG_SUFFIX} img`);
     this.hashTags = document.querySelector(`.${this.#HASHTAGS_CLASS}`);
     this.description = document.querySelector(`.${this.#DESCRIPTION_CLASS}`);
+    this.uploadForm = document.querySelector(`.${this.modalDialogName}${this.#FORM_SUFFIX}`);
 
     this.submitButtonDefaultName = this.submitButton.textContent;
     this.zoomingService = new ZoomingService(this.modalDialogName, this.#SCALE_CONTROL_CLASS);
     this.visualEffectSevice = new VisualEffectsService(this.#EFFECT_LEVEL_CLASS, this.modalDialogName, this.#EFFECT_PREFIX);
+    this.validator = new FormValidator(this.uploadForm);
+
     this.#configureZooming();
 
     this.onCloseButtonClick = () => this.#hideModalDialog();
@@ -52,10 +61,36 @@ export class UploadPhotoRenderer {
       }
     };
 
+    this.onFormSubmit = async (evt) => {
+      evt.preventDefault();
+      await this.#trySubmitFormIfValid(evt.target);
+    };
+
     this.onEffectChange = (evt) => {
       const effect = evt.target.id.split('-')[1];
       this.visualEffectSevice.apply(effect);
     };
+
+    this.suspendKeydownEsc = (evt) => {
+      if (evt.key === 'Escape' && evt.target.matches(':focus')) {
+        evt.stopPropagation();
+      }
+    };
+  }
+
+  async #trySubmitFormIfValid(target) {
+    if (this.validator.validate()) {
+      this.#beginUploading();
+      this.#suspendEvents();
+
+      this.apiClient.postData(target)
+        .then(() => {
+          this.#hideModalDialog();
+          this.messageRenderer.renderSuccess(() => this.#unsuspendEvents());
+        })
+        .catch(() => this.messageRenderer.renderUploadError(() => this.#unsuspendEvents()))
+        .finally(() => this.#endUploading());
+    }
   }
 
   #configureZooming(){
@@ -86,16 +121,35 @@ export class UploadPhotoRenderer {
 
     //Clean Up
     this.#resetSettings();
+    this.#unsubscribe();
     this.visualEffectSevice.destroy();
+    this.validator.reset();
+  }
+
+  #unsubscribe() {
     document.removeEventListener('keydown', this.onDocumentKeyDown);
     this.closeButton.removeEventListener('click', this.onCloseButtonClick);
     this.effectsCollection.removeEventListener('change', this.onEffectChange);
+    this.uploadForm.removeEventListener('submit', this.onFormSubmit);
+    this.hashTags.removeEventListener('keydown', this.suspendKeydownEsc);
+    this.description.removeEventListener('keydown', this.suspendKeydownEsc);
+  }
+
+  #subscribe() {
+    this.closeButton.addEventListener('click', this.onCloseButtonClick);
+    document.addEventListener('keydown', this.onDocumentKeyDown);
+    this.effectsCollection.addEventListener('change', this.onEffectChange);
+    this.uploadForm.addEventListener('submit', this.onFormSubmit);
+    this.hashTags.addEventListener('keydown', this.suspendKeydownEsc);
+    this.description.addEventListener('keydown', this.suspendKeydownEsc);
   }
 
   #showModalDialog() {
     this.visualEffectSevice.initialize();
     document.body.classList.add(this.#MODAL_DIALOG_CLASS);
     this.modalDialog.classList.remove(this.#HIDEN_CLASS);
+
+    this.#subscribe();
   }
 
   #SetPreviewPhoto(file){
@@ -108,26 +162,22 @@ export class UploadPhotoRenderer {
     }
   }
 
-  beginUploading() {
+  #suspendEvents() {
+    document.removeEventListener('keydown', this.onDocumentKeyDown);
+  }
+
+  #unsuspendEvents() {
+    document.addEventListener('keydown', this.onDocumentKeyDown);
+  }
+
+  #beginUploading() {
     this.submitButton.disabled = true;
     this.submitButton.textContent = this.#UPLOADING_MESSAGE;
   }
 
-  suspendEvents(){
-    document.removeEventListener('keydown', this.onDocumentKeyDown);
-  }
-
-  unSuspendEvents(){
-    document.addEventListener('keydown', this.onDocumentKeyDown);
-  }
-
-  endUploading() {
+  #endUploading() {
     this.submitButton.disabled = false;
     this.submitButton.textContent = this.submitButtonDefaultName;
-  }
-
-  cancel() {
-    this.#hideModalDialog();
   }
 
   render(file){
@@ -136,10 +186,6 @@ export class UploadPhotoRenderer {
     }
 
     this.#showModalDialog();
-
     this.#SetPreviewPhoto(file);
-    this.closeButton.addEventListener('click', this.onCloseButtonClick);
-    document.addEventListener('keydown', this.onDocumentKeyDown);
-    this.effectsCollection.addEventListener('change', this.onEffectChange);
   }
 }

@@ -1,42 +1,39 @@
-import { PicturesPreviewRenderer } from './picturesPreviewRenderer';
-import { PictureFullScreenRenderer } from './pictureFullScreenRenderer';
-import { UploadPhotoRenderer } from './uploadPhotoRenderer';
-import { FormValidator } from './formValidator';
-import { Utils } from './utils';
-import { ApiClient } from './apiClient';
-import { MessagesRenderer } from './messagesRenderer';
-import { PictureFilterRenderer } from './pictureFilterRenderer';
+import { PicturesPreviewRenderer } from './pictures-preview-renderer';
+import { PictureFullScreenRenderer } from './picture-fullscreen-renderer';
+import { UploadPhotoRenderer } from './upload-photo-renderer';
+import { ApiClient } from './api-сlient';
+import { MessagesRenderer } from './messages-renderer';
+import { PictureFilterRenderer } from './picture-filter-renderer';
 
 //Selectors
 const thumbnailsContainer = document.querySelector('.pictures');
 const photoUploadInput = document.querySelector('.img-upload__input');
-const uploadForm = document.querySelector('.img-upload__form');
 
 //Classes Initialization
-const apiClient = new ApiClient('https://31.javascript.htmlacademy.pro/kekstagram');
+const messageRenderer = new MessagesRenderer();
+const apiClient = new ApiClient('https://31.javascript.htmlacademy.pro/kekstagram/', messageRenderer);
 const picturesRenderer = new PicturesPreviewRenderer('picture');
 const pictureFullScreenRenderer = new PictureFullScreenRenderer('big-picture');
-const uploadPictureRenderer = new UploadPhotoRenderer('img-upload');
-const validator = new FormValidator(uploadForm);
-const messageRenderer = new MessagesRenderer();
+const uploadPictureRenderer = new UploadPhotoRenderer('img-upload', apiClient, messageRenderer);
 
 //Logic
-const feedPosts = await apiClient.getData(() => messageRenderer.renderLoadError('data-error'));
-const filterRenderer = new PictureFilterRenderer('img-filters', feedPosts, thumbnailsContainer, picturesRenderer);
-filterRenderer.render();
-const thumbnailsFragments = picturesRenderer.render(feedPosts);
-thumbnailsContainer?.appendChild(thumbnailsFragments);
-Utils.supressKeydown('Escape', 'text__hashtags');
-Utils.supressKeydown('Escape', 'text__description');
-
-//Subscriptions
-thumbnailsContainer.addEventListener('click', (evt) => {
-  const targetElement = evt.target;
-  const container = targetElement.closest('.picture');
-  if (container?.dataset?.id) {
-    const postIdentity = Number(container.dataset.id);
-    pictureFullScreenRenderer.render(feedPosts.get(postIdentity));
+apiClient.getData().then((feedPosts) => {
+  const filterRenderer = new PictureFilterRenderer('img-filters', feedPosts, thumbnailsContainer, picturesRenderer);
+  filterRenderer.render();
+  if (feedPosts !== null) {
+    const thumbnailsFragments = picturesRenderer.render(feedPosts);
+    thumbnailsContainer?.appendChild(thumbnailsFragments);
   }
+
+  //Subscriptions
+  thumbnailsContainer.addEventListener('click', (evt) => {
+    const targetElement = evt.target;
+    const container = targetElement.closest('.picture');
+    if (container?.dataset?.id) {
+      const postIdentity = Number(container.dataset.id);
+      pictureFullScreenRenderer.render(feedPosts.get(postIdentity));
+    }
+  });
 });
 
 photoUploadInput.addEventListener('change', () => {
@@ -44,22 +41,5 @@ photoUploadInput.addEventListener('change', () => {
   if (files.length > 0) {
     const file = files[0];
     uploadPictureRenderer.render(file);
-  }
-});
-
-uploadForm.addEventListener('submit', async (evt) => {
-  evt.preventDefault();
-  if (validator.validate()) {
-    uploadPictureRenderer.beginUploading();
-    uploadPictureRenderer.suspendEvents();
-    try {
-      const success = await apiClient.postData(evt.target, () => messageRenderer.renderUploadError('error', () => uploadPictureRenderer.unSuspendEvents()));
-      if (success) {
-        uploadPictureRenderer.cancel();
-        messageRenderer.renderSuccess('success', () => uploadPictureRenderer.unSuspendEvents());
-      }
-    } finally {
-      uploadPictureRenderer.endUploading();
-    }
   }
 });

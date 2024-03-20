@@ -1,4 +1,4 @@
-import { NameGenerator } from './nameGenerator';
+import { NameGenerator } from './name-generator';
 import { Utils } from './utils';
 
 export class CommentsGenerator {

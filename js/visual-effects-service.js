@@ -9,6 +9,7 @@ export class VisualEffectsService {
   #PREVIEW_IMG_SUFFIX = '__preview';
   //Classes
   #HIDE_OBJECT_CLASS = 'visually-hidden';
+  #EFFECT_ITEMS_CLASS = 'effects__radio';
 
   #EFFECTS = {
     chrome: { min: 0, max: 1, step: 0.1, getValue: (value) => `grayscale(${value})` },
@@ -26,6 +27,7 @@ export class VisualEffectsService {
     this.sliderValue = this.effectLevel.querySelector(`.${effectSection}${this.#SLIDER_VALUE_SUFFIX}`);
     this.imagePreview = document.querySelector(`.${imageContainerName}${this.#PREVIEW_IMG_SUFFIX} img`);
     this.imageThumbnails = document.querySelectorAll(`.${effectPrefix}`);
+    this.effectsRadios = document.querySelectorAll(`.${this.#EFFECT_ITEMS_CLASS}`);
     this.currentEffect = {
       effect: this.#EMPTY_EFFECT,
       value: this.#EMPTY_EFFECT_VALUE
@@ -59,6 +61,12 @@ export class VisualEffectsService {
       },
       start: this.#EFFECTS[effect].max,
       step: this.#EFFECTS[effect].step,
+    });
+  }
+
+  #resetSelectedFilter() {
+    this.effectsRadios.forEach((effect) => {
+      effect.checked = effect.value === this.#EMPTY_EFFECT;
     });
   }
 
@@ -105,6 +113,7 @@ export class VisualEffectsService {
     this.currentEffect.effect = this.#EMPTY_EFFECT;
     this.currentEffect.value = this.#EMPTY_EFFECT_VALUE;
 
+    this.#resetSelectedFilter();
     this.#applyEffect();
   }
 }

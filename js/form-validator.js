@@ -64,6 +64,11 @@ export class FormValidator {
     return value.length <= 140;
   }
 
+  reset() {
+    this.pristine.reset();
+    this.pristine.destroy();
+  }
+
   validate() {
     return this.pristine.validate();
   }
