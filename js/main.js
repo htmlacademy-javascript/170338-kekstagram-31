@@ -1,7 +1,7 @@
 import { PicturesPreviewRenderer } from './pictures-preview-renderer';
 import { PictureFullScreenRenderer } from './picture-fullscreen-renderer';
 import { UploadPhotoRenderer } from './upload-photo-renderer';
-import { ApiClient } from './api-сlient';
+import { ApiClient } from './api-client';
 import { MessagesRenderer } from './messages-renderer';
 import { PictureFilterRenderer } from './picture-filter-renderer';
 
