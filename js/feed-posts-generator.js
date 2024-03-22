@@ -3,9 +3,12 @@ import { CommentsGenerator } from './comments-generator';
 import { DescriptionGenerator } from './description-generator';
 
 export class FeedPostsGenerator {
+  //CONSTS
+  #DEFAULT_POSTS_COUNT = 25;
+
   #postsStore = new Map();
 
-  constructor(count = 25) {
+  constructor(count = this.#DEFAULT_POSTS_COUNT) {
     this.conut = count;
     this.commentsGenerator = new CommentsGenerator(count);
   }
@@ -22,12 +25,11 @@ export class FeedPostsGenerator {
 
   /**
   * Генерирует 25 объектов постов и комментариями к ним.
-  * @param {regenerate} Признак того что нужно перегененировать посты.
   * @returns {Map} Map из 25 постов для проекта Keksogram.
   */
-  generate(regenerate = false) {
+  generate() {
     const MINIMUM_IDENTITY = 1;
-    if(!regenerate && this.#postsStore.size > 0) {
+    if(this.#postsStore.size > 0) {
       return this.#postsStore;
     }
 

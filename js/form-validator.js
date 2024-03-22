@@ -1,4 +1,9 @@
 export class FormValidator {
+  //CONSTS
+  #HASHTAGS_MAX_COUNT = 5;
+  #HASHTAG_MAX_LENGTH = 20;
+  #DESCRIPTION_MAX_LENGTH = 140;
+
   //Classes
   #HASHTAGS_CLASS = 'text__hashtags';
   #DESCRIPTION_CLASS = 'text__description';
@@ -25,7 +30,7 @@ export class FormValidator {
 
     this.pristine.addValidator(
       this.description,
-      this.#validateDescriptionLength,
+      this.#validateDescriptionLength.bind(this),
       'Комментарий слишком длинный'
     );
   }
@@ -35,7 +40,7 @@ export class FormValidator {
     const hashtagRegex = /^#[A-Za-z0-9а-яА-Я]+$/;
     const uniqueHashtags = new Set();
 
-    if (hashtagsArray.length > 5) {
+    if (hashtagsArray.length > this.#HASHTAGS_MAX_COUNT) {
       this.hashTagsErrorMessage = 'Нельзя указать больше пяти хэштегов';
       return false;
     }
@@ -45,7 +50,7 @@ export class FormValidator {
         this.hashTagsErrorMessage = 'Неверный формат хэштега';
         return false;
       }
-      if (tag.length > 20) {
+      if (tag.length > this.#HASHTAG_MAX_LENGTH) {
         this.hashTagsErrorMessage = 'Хэштеги не должны быть длиннее 20 символов';
         return false;
       }
@@ -61,7 +66,7 @@ export class FormValidator {
   }
 
   #validateDescriptionLength(value) {
-    return value.length <= 140;
+    return value.length <= this.#DESCRIPTION_MAX_LENGTH;
   }
 
   reset() {
